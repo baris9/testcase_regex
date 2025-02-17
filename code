@@ -5,15 +5,15 @@ import sys
 def getTupleElementByName(allListOfValues,parametername,groupname):
     valuesList=[]
 
-    for item in allListOfValues: #listenin icerisindeki her bir dictionary, itemlar. 
-        for tpl in item[groupname]: #secilen item'in icerisindeki(her bir dictionary) tupple'lar.
+    for item in allListOfValues: 
+        for tpl in item[groupname]: 
             if groupname=="test_procedure":
                 if tpl[1]==parametername:
                     valuesList.append((tpl[0],tpl[1],tpl[3]))
 
             else:
-                if tpl[0]==parametername: #tuple'ın ilk elemanı her zaman parametrenin ismi. 
-                    valuesList.append(tpl[1]) #tuple'ın ikinci elemanı parametrenin degeri. 
+                if tpl[0]==parametername: 
+                    valuesList.append(tpl[1])  
     return valuesList
 
 def getListOfParameters(originalText,itemRegex):
@@ -30,19 +30,18 @@ def getListOfParameters(originalText,itemRegex):
         3. Then, remove the empty lists in the previous step without any values.
         4. Finally, flatten the list of lists into a list.
     """
-    listOfParameters=[item.strip() for item in originalText.split('\n') if item]  # bos satırları almıyoruz if item diyerek. 
+    listOfParameters=[item.strip() for item in originalText.split('\n') if item]  
     #print(listOfParameters) 
-    listOfParameters=[re.findall(itemRegex, item) for item in listOfParameters] #findall bütün elemanlar icin bos ya da dolu sonuc gönderir. 
+    listOfParameters=[re.findall(itemRegex, item) for item in listOfParameters] 
     #print(listOfParameters) 
-    listOfParameters=[item for item in listOfParameters if item] #bos listeleri almamayı saglayan . bos liste false döndürdügü icin if onu discard ediyor. 
+    listOfParameters=[item for item in listOfParameters if item] . 
     #print(listOfParameters)
-    listOfParameters = [x for xs in listOfParameters for x in xs] #flatten islemini yaptık. list of list'leri, list'e cevirdik. elimizde son asamada list of tupples var. 
-    #her bir tupple'ın elemanı yakaladıgımız degiskenleri barındırıyor. 
+    listOfParameters = [x for xs in listOfParameters for x in xs]  
     #print(listOfParameters) 
     return listOfParameters
     
 
-fileName=sys.argv[1] #dosya ismini parametrik vermek icin. 
+fileName=sys.argv[1] 
 #fileName="testcase.xlsx"
 df_excel=pd.read_excel(fileName,header=None)
 df_excel.columns=["TestCase"] 
@@ -52,14 +51,13 @@ allListOfValues=[]
 # ([^"]+): Matches 1 or more characters except " into a group
 # (.*?): Matches 0 or more any character except newline for 0 or 1 time into a group.
 # re.DOTALL: Without the switch, . matches any character except a newline. When re.DOTALL is used, newlines are matched as well:
-# .* = herhangi bi karakter gelebilir n kere(new line haric)
 """
 # Regex to capture different sections
 testCaseType_regex=r"Test Summary:(.*?)Test Case.*"
 
-preconditions_regex = r"Preconditions:(.*?)Test Procedure:" # parantez() koyarak grup olusturduk.
+preconditions_regex = r"Preconditions:(.*?)Test Procedure:" 
 
-preconditions_item_regex=r'Set the EEPROM Parameter par"([^"]+)" to "([^"]+)"'  # ^=except demek | +=en az bir tane 
+preconditions_item_regex=r'Set the EEPROM Parameter par"([^"]+)" to "([^"]+)"' 
 
 test_procedure_regex = r"Test Procedure:(.*?)Expected Results:"
 test_procedure_item_regex=r'Channel:"([^"]+)":"([^"]+)":sig"([^"]+)" to.* "([^"]+)"'
@@ -71,7 +69,7 @@ for index,text in df_excel.iterrows():
     testcaseText=text.values[0]
     # Extracting text for each section
 
-    testCaseType_text=re.search(testCaseType_regex, testcaseText, re.DOTALL).group(1).strip()   #strip metnin en bas ve en sonundaki boslukları siliyo
+    testCaseType_text=re.search(testCaseType_regex, testcaseText, re.DOTALL).group(1).strip()   
     preconditions_text = re.search(preconditions_regex, testcaseText, re.DOTALL).group(1).strip()
     test_procedure_text = re.search(test_procedure_regex, testcaseText, re.DOTALL).group(1).strip()
     expected_results_text = re.search(expected_results_regex, testcaseText, re.DOTALL).group(1).strip()
@@ -95,7 +93,7 @@ print(allListOfValues)
 #print(allListOfValues[0]['preconditions']) ilk dictionary'nın precondition'ları geldi. 
 
 #print(allListOfValues[]['preconditions'])
-print([item['preconditions'] for item in allListOfValues]) # bütün dictionarylerdeki preconditions'ları getirdik. 
+print([item['preconditions'] for item in allListOfValues])
 
 
 result = getTupleElementByName(allListOfValues,'PRMnumAxles','preconditions')
